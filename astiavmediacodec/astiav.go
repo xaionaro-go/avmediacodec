@@ -5,13 +5,14 @@ import (
 	"unsafe"
 
 	"github.com/asticode/go-astiav"
+	"github.com/xaionaro-go/avmediacodec/types"
 	"github.com/xaionaro-go/unsafetools"
 )
 import "C"
 
-func CFromAVCodecContext(codecCtx *astiav.CodecContext) *C.void {
+func CFromAVCodecContext(codecCtx *astiav.CodecContext) *types.CVoid {
 	orig := reflect.ValueOf(codecCtx)
 	field := unsafetools.FieldByNameInValue(orig, "c")
 	unsafePtr := field.Convert(reflect.TypeOf(unsafe.Pointer(nil))).Interface().(unsafe.Pointer)
-	return (*C.void)(unsafePtr)
+	return (*types.CVoid)(unsafePtr)
 }

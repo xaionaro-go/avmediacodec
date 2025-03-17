@@ -56,65 +56,69 @@ typedef struct MediaCodecEncContext {
 } MediaCodecEncContext;
 */
 import "C"
-import "unsafe"
+import (
+	"unsafe"
+
+	"github.com/xaionaro-go/avmediacodec/types"
+)
 
 type FFAMediaFormat C.FFAMediaFormat
 
-func CWrapFFAMediaFormat(ptr *C.void) *C.FFAMediaFormat {
+func CWrapFFAMediaFormat(ptr *types.CVoid) *C.FFAMediaFormat {
 	return (*C.FFAMediaFormat)(unsafe.Pointer(ptr))
 }
 
-func WrapFFAMediaFormat(ptr *C.void) *FFAMediaFormat {
+func WrapFFAMediaFormat(ptr *types.CVoid) *FFAMediaFormat {
 	return (*FFAMediaFormat)(CWrapFFAMediaFormat(ptr))
 }
 
 func (fmt *FFAMediaFormat) GetRawClass() *C.AVClass {
 	return (*C.FFAMediaFormat)(fmt).class
 }
-func (fmt *FFAMediaFormat) GetRawCreate() *C.void {
-	return (*C.void)((*C.FFAMediaFormat)(fmt).create)
+func (fmt *FFAMediaFormat) GetRawCreate() *types.CVoid {
+	return (*types.CVoid)((*C.FFAMediaFormat)(fmt).create)
 }
-func (fmt *FFAMediaFormat) GetRawDelete() *C.void {
-	return (*C.void)((*C.FFAMediaFormat)(fmt).delete)
+func (fmt *FFAMediaFormat) GetRawDelete() *types.CVoid {
+	return (*types.CVoid)((*C.FFAMediaFormat)(fmt).delete)
 }
-func (fmt *FFAMediaFormat) GetRawToString() *C.void {
-	return (*C.void)((*C.FFAMediaFormat)(fmt).toString)
+func (fmt *FFAMediaFormat) GetRawToString() *types.CVoid {
+	return (*types.CVoid)((*C.FFAMediaFormat)(fmt).toString)
 }
-func (fmt *FFAMediaFormat) GetRawGetInt32() *C.void {
-	return (*C.void)((*C.FFAMediaFormat)(fmt).getInt32)
+func (fmt *FFAMediaFormat) GetRawGetInt32() *types.CVoid {
+	return (*types.CVoid)((*C.FFAMediaFormat)(fmt).getInt32)
 }
-func (fmt *FFAMediaFormat) GetRawGetInt64() *C.void {
-	return (*C.void)((*C.FFAMediaFormat)(fmt).getInt64)
+func (fmt *FFAMediaFormat) GetRawGetInt64() *types.CVoid {
+	return (*types.CVoid)((*C.FFAMediaFormat)(fmt).getInt64)
 }
-func (fmt *FFAMediaFormat) GetRawGetFloat() *C.void {
-	return (*C.void)((*C.FFAMediaFormat)(fmt).getFloat)
+func (fmt *FFAMediaFormat) GetRawGetFloat() *types.CVoid {
+	return (*types.CVoid)((*C.FFAMediaFormat)(fmt).getFloat)
 }
-func (fmt *FFAMediaFormat) GetRawGetBuffer() *C.void {
-	return (*C.void)((*C.FFAMediaFormat)(fmt).getBuffer)
+func (fmt *FFAMediaFormat) GetRawGetBuffer() *types.CVoid {
+	return (*types.CVoid)((*C.FFAMediaFormat)(fmt).getBuffer)
 }
-func (fmt *FFAMediaFormat) GetRawGetString() *C.void {
-	return (*C.void)((*C.FFAMediaFormat)(fmt).getString)
+func (fmt *FFAMediaFormat) GetRawGetString() *types.CVoid {
+	return (*types.CVoid)((*C.FFAMediaFormat)(fmt).getString)
 }
-func (fmt *FFAMediaFormat) GetRawGetRect() *C.void {
-	return (*C.void)((*C.FFAMediaFormat)(fmt).getRect)
+func (fmt *FFAMediaFormat) GetRawGetRect() *types.CVoid {
+	return (*types.CVoid)((*C.FFAMediaFormat)(fmt).getRect)
 }
-func (fmt *FFAMediaFormat) GetRawSetInt32() *C.void {
-	return (*C.void)((*C.FFAMediaFormat)(fmt).setInt32)
+func (fmt *FFAMediaFormat) GetRawSetInt32() *types.CVoid {
+	return (*types.CVoid)((*C.FFAMediaFormat)(fmt).setInt32)
 }
-func (fmt *FFAMediaFormat) GetRawSetInt64() *C.void {
-	return (*C.void)((*C.FFAMediaFormat)(fmt).setInt64)
+func (fmt *FFAMediaFormat) GetRawSetInt64() *types.CVoid {
+	return (*types.CVoid)((*C.FFAMediaFormat)(fmt).setInt64)
 }
-func (fmt *FFAMediaFormat) GetRawSetFloat() *C.void {
-	return (*C.void)((*C.FFAMediaFormat)(fmt).setFloat)
+func (fmt *FFAMediaFormat) GetRawSetFloat() *types.CVoid {
+	return (*types.CVoid)((*C.FFAMediaFormat)(fmt).setFloat)
 }
-func (fmt *FFAMediaFormat) GetRawSetString() *C.void {
-	return (*C.void)((*C.FFAMediaFormat)(fmt).setString)
+func (fmt *FFAMediaFormat) GetRawSetString() *types.CVoid {
+	return (*types.CVoid)((*C.FFAMediaFormat)(fmt).setString)
 }
-func (fmt *FFAMediaFormat) GetRawSetBuffer() *C.void {
-	return (*C.void)((*C.FFAMediaFormat)(fmt).setBuffer)
+func (fmt *FFAMediaFormat) GetRawSetBuffer() *types.CVoid {
+	return (*types.CVoid)((*C.FFAMediaFormat)(fmt).setBuffer)
 }
-func (fmt *FFAMediaFormat) GetRawSetRect() *C.void {
-	return (*C.void)((*C.FFAMediaFormat)(fmt).setRect)
+func (fmt *FFAMediaFormat) GetRawSetRect() *types.CVoid {
+	return (*types.CVoid)((*C.FFAMediaFormat)(fmt).setRect)
 }
 
 func (fmt *FFAMediaFormat) SetInt32(
@@ -129,11 +133,11 @@ func (fmt *FFAMediaFormat) SetInt32(
 
 type FFAMediaCodec C.FFAMediaCodec
 
-func CWrapFFAMediaCodec(ptr *C.void) *C.FFAMediaCodec {
+func CWrapFFAMediaCodec(ptr *types.CVoid) *C.FFAMediaCodec {
 	return (*C.FFAMediaCodec)(unsafe.Pointer(ptr))
 }
 
-func WrapFFAMediaCodec(ptr *C.void) *FFAMediaCodec {
+func WrapFFAMediaCodec(ptr *types.CVoid) *FFAMediaCodec {
 	return (*FFAMediaCodec)(CWrapFFAMediaCodec(ptr))
 }
 
@@ -144,11 +148,11 @@ func (codec *FFAMediaCodec) Format() *FFAMediaFormat {
 
 type AVCodecContext C.AVCodecContext
 
-func CWrapAVCodecContext(ptr *C.void) *C.AVCodecContext {
+func CWrapAVCodecContext(ptr *types.CVoid) *C.AVCodecContext {
 	return (*C.AVCodecContext)(unsafe.Pointer(ptr))
 }
 
-func WrapAVCodecContext(ptr *C.void) *AVCodecContext {
+func WrapAVCodecContext(ptr *types.CVoid) *AVCodecContext {
 	return (*AVCodecContext)(CWrapAVCodecContext(ptr))
 }
 
