@@ -56,9 +56,7 @@ typedef struct MediaCodecEncContext {
 } MediaCodecEncContext;
 */
 import "C"
-import (
-	"unsafe"
-)
+import "unsafe"
 
 type FFAMediaFormat C.FFAMediaFormat
 
