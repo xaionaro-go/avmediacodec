@@ -1,52 +1,64 @@
 package avmediacodec
 
+// #include <stdlib.h>
+// #include <stdint.h>
+// #include "3rdparty/ffmpeg/mediacodec_wrapper.h"
 /*
-#include <stdlib.h>
-#include <stdint.h>
 
-typedef void AVClass;
+typedef void *AVBSFContext;
+typedef void *AVMutex;
+typedef void *AVCond;
+typedef void *AVFifo;
 
-// copied from https://github.com/FFmpeg/FFmpeg/blob/2471b22023756df145d24f9dcb00a56eaa121859/libavcodec/mediacodec_wrapper.h#L62-L88
+// copied from https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/mediacodecenc.c#L64-L105
 
-typedef struct FFAMediaFormat FFAMediaFormat;
+typedef struct MediaCodecEncContext {
+    AVClass *avclass;
+    FFAMediaCodec *codec;
+    int use_ndk_codec;
+    const char *name;
+    FFANativeWindow *window;
 
-struct FFAMediaFormat {
-    const AVClass *class;
+    int fps;
+    int width;
+    int height;
 
-    FFAMediaFormat *(*create)(void);
-    int (*delete)(FFAMediaFormat *);
+    uint8_t *extradata;
+    int extradata_size;
+    int eof_sent;
 
-    char* (*toString)(FFAMediaFormat* format);
+    AVFrame *frame;
+    AVBSFContext *bsf;
 
-    int (*getInt32)(FFAMediaFormat* format, const char *name, int32_t *out);
-    int (*getInt64)(FFAMediaFormat* format, const char *name, int64_t *out);
-    int (*getFloat)(FFAMediaFormat* format, const char *name, float *out);
-    int (*getBuffer)(FFAMediaFormat* format, const char *name, void** data, size_t *size);
-    int (*getString)(FFAMediaFormat* format, const char *name, const char **out);
-    // NDK only, introduced in API level 28
-    int (*getRect)(FFAMediaFormat *, const char *name,
-                   int32_t *left, int32_t *top, int32_t *right, int32_t *bottom);
+    int bitrate_mode;
+    int level;
+    int pts_as_dts;
+    int extract_extradata;
+    // Ref. MediaFormat KEY_OPERATING_RATE
+    int operating_rate;
+    int async_mode;
 
-    void (*setInt32)(FFAMediaFormat* format, const char* name, int32_t value);
-    void (*setInt64)(FFAMediaFormat* format, const char* name, int64_t value);
-    void (*setFloat)(FFAMediaFormat* format, const char* name, float value);
-    void (*setString)(FFAMediaFormat* format, const char* name, const char* value);
-    void (*setBuffer)(FFAMediaFormat* format, const char* name, void* data, size_t size);
-    // NDK only, introduced in API level 28
-    void (*setRect)(FFAMediaFormat*, const char* name,
-                    int32_t left, int32_t top, int32_t right, int32_t bottom);
-};
+    AVMutex input_mutex;
+    AVCond input_cond;
+    AVFifo *input_index;
 
-// copied from https://github.com/FFmpeg/FFmpeg/blob/2471b22023756df145d24f9dcb00a56eaa121859/libavcodec/mediacodec_wrapper.h#L135-L138
+    AVMutex output_mutex;
+    AVCond output_cond;
+    int encode_status;
+    AVFifo *async_output;
 
-static inline void ff_AMediaFormat_setInt32(FFAMediaFormat* format, const char* name, int32_t value)
-{
-    format->setInt32(format, name, value);
-}
-
+    int qp_i_min;
+    int qp_p_min;
+    int qp_b_min;
+    int qp_i_max;
+    int qp_p_max;
+    int qp_b_max;
+} MediaCodecEncContext;
 */
 import "C"
-import "unsafe"
+import (
+	"unsafe"
+)
 
 type FFAMediaFormat C.FFAMediaFormat
 
@@ -58,7 +70,7 @@ func WrapFFAMediaFormat(ptr *C.void) *FFAMediaFormat {
 	return (*FFAMediaFormat)(CWrapFFAMediaFormat(ptr))
 }
 
-func (fmt *FFAMediaFormat) GetRawClass() unsafe.Pointer {
+func (fmt *FFAMediaFormat) GetRawClass() *C.AVClass {
 	return (*C.FFAMediaFormat)(fmt).class
 }
 func (fmt *FFAMediaFormat) GetRawCreate() *C.void {
@@ -115,4 +127,39 @@ func (fmt *FFAMediaFormat) SetInt32(
 	defer C.free(unsafe.Pointer(cname))
 	C.ff_AMediaFormat_setInt32((*C.FFAMediaFormat)(fmt), cname, C.int32_t(value))
 	return nil
+}
+
+type FFAMediaCodec C.FFAMediaCodec
+
+func CWrapFFAMediaCodec(ptr *C.void) *C.FFAMediaCodec {
+	return (*C.FFAMediaCodec)(unsafe.Pointer(ptr))
+}
+
+func WrapFFAMediaCodec(ptr *C.void) *FFAMediaCodec {
+	return (*FFAMediaCodec)(CWrapFFAMediaCodec(ptr))
+}
+
+func (codec *FFAMediaCodec) Format() *FFAMediaFormat {
+	cOutFormat := C.ff_AMediaCodec_getOutputFormat((*C.FFAMediaCodec)(codec))
+	return (*FFAMediaFormat)(cOutFormat)
+}
+
+type AVCodecContext C.AVCodecContext
+
+func CWrapAVCodecContext(ptr *C.void) *C.AVCodecContext {
+	return (*C.AVCodecContext)(unsafe.Pointer(ptr))
+}
+
+func WrapAVCodecContext(ptr *C.void) *AVCodecContext {
+	return (*AVCodecContext)(CWrapAVCodecContext(ptr))
+}
+
+func (avctx *AVCodecContext) PrivData() *MediaCodecEncContext {
+	return (*MediaCodecEncContext)(avctx.priv_data)
+}
+
+type MediaCodecEncContext = C.MediaCodecEncContext
+
+func (encCtx *MediaCodecEncContext) Codec() *FFAMediaCodec {
+	return (*FFAMediaCodec)(encCtx.codec)
 }
