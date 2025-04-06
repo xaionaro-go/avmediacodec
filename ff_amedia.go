@@ -160,7 +160,7 @@ func (avctx *AVCodecContext) PrivData() *MediaCodecEncContext {
 	return (*MediaCodecEncContext)(avctx.priv_data)
 }
 
-type MediaCodecEncContext = C.MediaCodecEncContext
+type MediaCodecEncContext C.MediaCodecEncContext
 
 func (encCtx *MediaCodecEncContext) Codec() *FFAMediaCodec {
 	return (*FFAMediaCodec)(encCtx.codec)
