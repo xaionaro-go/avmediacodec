@@ -124,11 +124,39 @@ func (fmt *FFAMediaFormat) GetRawSetRect() *types.CVoid {
 func (fmt *FFAMediaFormat) SetInt32(
 	name string,
 	value int32,
-) error {
+) {
 	cname := C.CString(name)
 	defer C.free(unsafe.Pointer(cname))
 	C.ff_AMediaFormat_setInt32((*C.FFAMediaFormat)(fmt), cname, C.int32_t(value))
-	return nil
+}
+
+func (fmt *FFAMediaFormat) GetInt32(
+	name string,
+) (int32, error) {
+	cname := C.CString(name)
+	defer C.free(unsafe.Pointer(cname))
+	var value int32
+	C.ff_AMediaFormat_getInt32((*C.FFAMediaFormat)(fmt), cname, (*C.int32_t)(&value))
+	return value, nil
+}
+
+func (fmt *FFAMediaFormat) SetInt64(
+	name string,
+	value int64,
+) {
+	cname := C.CString(name)
+	defer C.free(unsafe.Pointer(cname))
+	C.ff_AMediaFormat_setInt64((*C.FFAMediaFormat)(fmt), cname, C.int64_t(value))
+}
+
+func (fmt *FFAMediaFormat) GetInt64(
+	name string,
+) (int64, error) {
+	cname := C.CString(name)
+	defer C.free(unsafe.Pointer(cname))
+	var value int64
+	C.ff_AMediaFormat_getInt64((*C.FFAMediaFormat)(fmt), cname, (*C.int64_t)(&value))
+	return value, nil
 }
 
 type FFAMediaCodec C.FFAMediaCodec
