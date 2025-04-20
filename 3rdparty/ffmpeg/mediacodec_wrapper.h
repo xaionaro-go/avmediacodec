@@ -233,6 +233,9 @@ struct FFAMediaCodec {
 
     int (*cleanOutputBuffers)(FFAMediaCodec *codec);
 
+    // Introduced in Android API 26
+    int (*setParameters)(FFAMediaCodec* codec, const FFAMediaFormat* format);
+
     // For encoder with FFANativeWindow as input.
     int (*signalEndOfInputStream)(FFAMediaCodec *);
 
@@ -257,6 +260,12 @@ static inline int ff_AMediaCodec_configure(FFAMediaCodec *codec,
                                            void *crypto, uint32_t flags)
 {
     return codec->configure(codec, format, surface, crypto, flags);
+}
+
+static inline int ff_AMediaCodec_setParameters(FFAMediaCodec *codec,
+                                           const FFAMediaFormat *format)
+{
+    return codec->setParameters(codec, format);
 }
 
 static inline int ff_AMediaCodec_start(FFAMediaCodec* codec)
