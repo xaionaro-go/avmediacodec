@@ -1,16 +1,22 @@
 package avmediacodec
 
-// #include <stdlib.h>
-// #include <stdint.h>
-// #include "3rdparty/ffmpeg/mediacodec_wrapper.h"
 /*
+#include <stdlib.h>
+#include <stdint.h>
+#include "3rdparty/ffmpeg/mediacodec_wrapper.h"
 
 typedef void *AVBSFContext;
 typedef void *AVMutex;
 typedef void *AVCond;
 typedef void *AVFifo;
+typedef void *AMediaCodec;
+typedef void *AMediaFormat;
+typedef void *ANativeWindow;
+typedef void *AVFifo;
+typedef void *media_status_t;
+typedef void *bool;
 
-// copied from https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/mediacodecenc.c#L64-L105
+// copied from https://github.com/FFmpeg/FFmpeg/blob/853e66a0726b0a9d6d6269a22f6f9b5be7763738/libavcodec/mediacodecenc.c#L64-L105
 
 typedef struct MediaCodecEncContext {
     AVClass *avclass;
@@ -54,12 +60,49 @@ typedef struct MediaCodecEncContext {
     int qp_p_max;
     int qp_b_max;
 } MediaCodecEncContext;
+
+// copied from https://github.com/FFmpeg/FFmpeg/blob/853e66a0726b0a9d6d6269a22f6f9b5be7763738/libavcodec/mediacodec_wrapper.c#L1835-L1866
+
+typedef struct FFAMediaFormatNdk {
+    FFAMediaFormat api;
+
+    void *libmedia;
+    AMediaFormat *impl;
+
+    bool (*getRect)(AMediaFormat *, const char *name,
+                    int32_t *left, int32_t *top, int32_t *right, int32_t *bottom);
+    void (*setRect)(AMediaFormat *, const char *name,
+                    int32_t left, int32_t top, int32_t right, int32_t bottom);
+} FFAMediaFormatNdk;
+
+typedef struct FFAMediaCodecNdk {
+    FFAMediaCodec api;
+
+    void *libmedia;
+    AMediaCodec *impl;
+    ANativeWindow *window;
+
+    FFAMediaCodecOnAsyncNotifyCallback async_cb;
+    void *async_userdata;
+
+    // Available since API level 28.
+    media_status_t (*getName)(AMediaCodec*, char** out_name);
+    void (*releaseName)(AMediaCodec*, char* name);
+
+    // Available since API level 26.
+    media_status_t (*setInputSurface)(AMediaCodec*, ANativeWindow *);
+    media_status_t (*signalEndOfInputStream)(AMediaCodec *);
+    media_status_t (*setAsyncNotifyCallback)(AMediaCodec *,
+            struct AMediaCodecOnAsyncNotifyCallback callback, void *userdata);
+} FFAMediaCodecNdk;
+
 */
 import "C"
 import (
 	"unsafe"
 
 	"github.com/xaionaro-go/avmediacodec/types"
+	"github.com/xaionaro-go/ndk/media"
 )
 
 type FFAMediaFormat C.FFAMediaFormat
@@ -159,6 +202,10 @@ func (fmt *FFAMediaFormat) GetInt64(
 	return value, nil
 }
 
+func (fmt *FFAMediaFormat) GetMediaFormatNDK() *media.MediaFormat {
+	return (*media.MediaFormat)(unsafe.Pointer((*C.FFAMediaFormatNdk)(unsafe.Pointer(fmt)).impl))
+}
+
 type FFAMediaCodec C.FFAMediaCodec
 
 func CWrapFFAMediaCodec(ptr *types.CVoid) *C.FFAMediaCodec {
@@ -172,6 +219,14 @@ func WrapFFAMediaCodec(ptr *types.CVoid) *FFAMediaCodec {
 func (codec *FFAMediaCodec) Format() *FFAMediaFormat {
 	cOutFormat := C.ff_AMediaCodec_getOutputFormat((*C.FFAMediaCodec)(codec))
 	return (*FFAMediaFormat)(cOutFormat)
+}
+
+func (codec *FFAMediaCodec) GetMediaCodecNDK() *media.MediaCodec {
+	return (*media.MediaCodec)(unsafe.Pointer((*C.FFAMediaCodecNdk)(unsafe.Pointer(codec)).impl))
+}
+
+func (codec *FFAMediaCodec) SetParameters(avmFmt *FFAMediaFormat) error {
+	return codec.GetMediaCodecNDK().SetParameters(avmFmt.GetMediaFormatNDK())
 }
 
 type AVCodecContext C.AVCodecContext
