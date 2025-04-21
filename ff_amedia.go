@@ -6,7 +6,6 @@ import (
 	"unsafe"
 
 	"github.com/xaionaro-go/avmediacodec/types"
-	"github.com/xaionaro-go/ndk/media"
 )
 
 type FFAMediaFormat C.FFAMediaFormat
@@ -110,10 +109,6 @@ func (fmt *FFAMediaFormat) GetInt64(
 	return value, nil
 }
 
-func (fmt *FFAMediaFormat) GetMediaFormatNDK() *media.MediaFormat {
-	return (*media.MediaFormat)(unsafe.Pointer((*C.FFAMediaFormatNdk)(unsafe.Pointer(fmt)).impl))
-}
-
 type FFAMediaCodec C.FFAMediaCodec
 
 func CWrapFFAMediaCodec(ptr *types.CVoid) *C.FFAMediaCodec {
@@ -131,14 +126,6 @@ func (codec *FFAMediaCodec) CPointer() *C.FFAMediaCodec {
 func (codec *FFAMediaCodec) Format() *FFAMediaFormat {
 	cOutFormat := C.ff_AMediaCodec_getOutputFormat((*C.FFAMediaCodec)(codec))
 	return (*FFAMediaFormat)(cOutFormat)
-}
-
-func (codec *FFAMediaCodec) GetMediaCodecNDK() *media.MediaCodec {
-	return (*media.MediaCodec)(unsafe.Pointer((*C.FFAMediaCodecNdk)(unsafe.Pointer(codec)).impl))
-}
-
-func (codec *FFAMediaCodec) SetParametersNDK(avmFmt *FFAMediaFormat) error {
-	return codec.GetMediaCodecNDK().SetParameters(avmFmt.GetMediaFormatNDK())
 }
 
 type AVCodecContext C.AVCodecContext
