@@ -5,7 +5,8 @@ import "C"
 import (
 	"unsafe"
 
-	"github.com/xaionaro-go/avmediacodec/types"
+	"github.com/xaionaro-go/avcommon"
+	"github.com/xaionaro-go/avcommon/types"
 )
 
 type FFAMediaFormat C.FFAMediaFormat
@@ -128,21 +129,25 @@ func (codec *FFAMediaCodec) Format() *FFAMediaFormat {
 	return (*FFAMediaFormat)(cOutFormat)
 }
 
-type AVCodecContext C.AVCodecContext
-
-func CWrapAVCodecContext(ptr *types.CVoid) *C.AVCodecContext {
-	return (*C.AVCodecContext)(unsafe.Pointer(ptr))
-}
+type AVCodecContext avcommon.AVCodecContext
 
 func WrapAVCodecContext(ptr *types.CVoid) *AVCodecContext {
-	return (*AVCodecContext)(CWrapAVCodecContext(ptr))
+	return (*AVCodecContext)(avcommon.CWrapAVCodecContext(ptr))
 }
 
 func (avctx *AVCodecContext) PrivData() *MediaCodecEncContext {
-	return (*MediaCodecEncContext)(avctx.priv_data)
+	return WrapMediaCodecEncContext((*avcommon.AVCodecContext)(avctx).PrivData())
 }
 
 type MediaCodecEncContext C.MediaCodecEncContext
+
+func CWrapMediaCodecEncContext(ptr *types.CVoid) *C.MediaCodecEncContext {
+	return (*C.MediaCodecEncContext)(unsafe.Pointer(ptr))
+}
+
+func WrapMediaCodecEncContext(ptr *types.CVoid) *MediaCodecEncContext {
+	return (*MediaCodecEncContext)(CWrapMediaCodecEncContext(ptr))
+}
 
 func (encCtx *MediaCodecEncContext) Codec() *FFAMediaCodec {
 	return (*FFAMediaCodec)(encCtx.codec)
